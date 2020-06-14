@@ -1,17 +1,15 @@
+import json
+
 from Children import Children
-from Husband import Husband
-from TribalScraper import TribalScraper
-from Wife import Wife
+from Person import Person
 
 
 class FamilyGroup:
 
-    def __init__(self, node):
-        self.wife: Wife
-        self.husband: Husband
-        self.children: Children
-        self.parse(node)
+    def __init__(self):
+        self.wife: Person = None
+        self.husband: Person = None
+        self.children: Children = None
 
-    @classmethod
-    def parse(cls, node):
-        pass
+    def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__)

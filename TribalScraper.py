@@ -1,11 +1,14 @@
+from xml import etree
+
 from lxml import html
 import requests
-from typing import Dict
+from typing import Dict, List
 
-from Husband import Husband
+from Children import Children
+from FamilyGroup import FamilyGroup
+from Gender import Gender
 from Marriage import Marriage
 from Person import Person
-from Wife import Wife
 
 
 def trim(string: str):
@@ -20,31 +23,40 @@ class TribalScraper:
 
     def __init__(self):
         self.start = 1
+        self.family_groups: List[FamilyGroup] = []
 
-    @staticmethod
-    def parse(pid: int):
+    def parse(self, pid: int):
         url = TribalScraper.url_template + str(pid)
         page = requests.get(url)
         tree = html.fromstring(page.content)
-        tables = tree.xpath(".//table[@border=1]")
-        for table in tables:
-            name = trim(table.xpath("tr/td[position()=1]/b/text()")[0])
-            if name == "Wife":
-                w = Wife(table)
-                TribalScraper.people[w.name] = w
+        rows = tree.xpath("/html/body/center/table/tr/td")
+        for row in rows:
+            create_new = row.xpath("b")
+            tables = row.xpath("table")
+            if len(create_new) > 0:
+                family_group: FamilyGroup = FamilyGroup()
+                self.family_groups.append(family_group)
+            elif len(tables) > 0:
+                table = tables[0]
+                name = trim(table.xpath("tr/td[position()=1]/b/text()")[0])
+                if name == "Wife":
+                    w = Person(table, None)
+                    w.gender = Gender.FEMALE
+                    family_group.wife = w
 
-            if name == "Husband":
-                h = Husband(table)
-                TribalScraper.people[h.name] = h
+                if name == "Husband":
+                    h = Person(table, None)
+                    h.gender = Gender.MALE
+                    family_group.husband = h
 
-            if name == "Children":
-                c = Children(table)
-
+                if name == "Children":
+                    c = Children(table)
+                    family_group.children = c
 
 
 def main():
     scraper = TribalScraper()
-    scraper.parse(58)
+    scraper.parse(34)
 
 
 if __name__ == "__main__":

@@ -1,11 +1,10 @@
 from DateEvent import DateEvent
-from Husband import Husband
-from Wife import Wife
+from Person import Person
 
 
 class Marriage:
 
-    def __init__(self, married: DateEvent, husband: Husband, wife: Wife):
+    def __init__(self, married: DateEvent, husband: Person, wife: Person):
         self.married = married
         self.husband = husband
         self.wife = wife

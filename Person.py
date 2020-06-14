@@ -1,42 +1,33 @@
+import json
 from typing import List
 
 from DateEvent import DateEvent
 from Gender import Gender
-import Marriage
 
 
 class Person:
 
-    def __init__(self, node):
-        self.born: DateEvent
+    def __init__(self, node, name: str):
+        self.born: DateEvent = None
         self.mother: Person
         self.father: Person
-        self.gender: Gender
-        self.first_name = ""
-        self.middle_name = ""
-        self.last_name = ""
+        self.gender: Gender = None
+        self.name = name
         self.died: DateEvent
-        marriages: List[Marriage.Marriage]
         self.parse(node)
 
-    @classmethod
-    def parse(cls, node):
+    def parse(self, node):
         rows = node.xpath("tr")
-        cls.first_name = rows[0].xpath("//td[position()=2]/b/text()")[0]
+        if self.name is None:
+            self.name = str(rows[0].xpath("td[position()=2]/b/text()")[0]).strip()
         for row in rows:
-            cells = row.xpath("td")
-            cell_text = cells[0].text
-            if cell_text is not None and cell_text.strip() == "Born":
-                cls.born = DateEvent(cells)
+            self.person_info(row)
 
-    @property
-    def name(self):
-        return self.first_name + " " + self.last_name
+    def person_info(self, row):
+        cells = row.xpath("td")
+        cell_text = cells[0].text
+        if cell_text is not None and cell_text.strip() == "Born":
+            self.born = DateEvent(cells)
 
-    @classmethod
-    def set_dob(cls, born: DateEvent):
-        cls.born = born
-
-    @classmethod
-    def married(cls, marriage: Marriage):
-        cls.marriages.append(marriage)
+    def set_gender(self, value: Gender):
+        self.gender = value
