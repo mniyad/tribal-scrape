@@ -1,0 +1,3098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribal vs MyHeritage Comparison Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-bottom: 2px solid #95a5a6;
+            padding-bottom: 8px;
+        }
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .summary h2 {
+            color: white;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            margin-top: 0;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-box {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.95;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        .match-exact {
+            background-color: #d4edda;
+        }
+        .match-fuzzy {
+            background-color: #fff3cd;
+        }
+        .no-match {
+            background-color: #f8d7da;
+        }
+        .similarity {
+            font-weight: bold;
+            color: #e67e22;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .filter-box {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .badge-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Tribal vs MyHeritage GEDCOM - Detailed Comparison</h1>
+
+    <div class="summary">
+        <h2>Executive Summary</h2>
+        <div class="stat-grid">
+            <div class="stat-box">
+                <span class="stat-number">305</span>
+                <span class="stat-label">MyHeritage People</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">200</span>
+                <span class="stat-label">Tribal PIDs</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">210</span>
+                <span class="stat-label">Tribal Unique Names</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">93</span>
+                <span class="stat-label">Exact Matches</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">78</span>
+                <span class="stat-label">Fuzzy Matches (≥70%)</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">132</span>
+                <span class="stat-label">Only in MyHeritage</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">60</span>
+                <span class="stat-label">Only in Tribal</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">30.5%</span>
+                <span class="stat-label">Exact Match Rate</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>✅ Exact Matches (93)</h2>
+        <div class="filter-box">
+            <input type="text" id="exactFilter" onkeyup="filterTable('exactTable', 'exactFilter')"
+                   placeholder="Search exact matches...">
+        </div>
+        <table id="exactTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>MyHeritage Name</th>
+                    <th>Tribal Name</th>
+                    <th>Birth</th>
+                    <th>Death</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr class="match-exact">
+                    <td>1</td>
+                    <td>Abdul Azeez Yoosuf</td>
+                    <td>Yoosuf, Abdul Azeez</td>
+                    <td>20 MAY 1950</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>2</td>
+                    <td>Abdul Rasheed Yoosuf</td>
+                    <td>Yoosuf, Abdul Rasheed</td>
+                    <td>1942</td>
+                    <td>25 DEC 2016</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>3</td>
+                    <td>Abdullah Maaz</td>
+                    <td>Maaz, Abdullah</td>
+                    <td>4 MAR 1964</td>
+                    <td>25 JAN 2009</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>4</td>
+                    <td>Abdullah Shanoon</td>
+                    <td>Shanoon, Abdullah</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>5</td>
+                    <td>Abidha Mohamed</td>
+                    <td>Mohamed, Abidha</td>
+                    <td>15 APR 1949</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>6</td>
+                    <td>Adam Abdullah</td>
+                    <td>Abdullah, Adam</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>7</td>
+                    <td>Adam Fulhu</td>
+                    <td>Fulhu, Adam</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>8</td>
+                    <td>Adil Yoosuf</td>
+                    <td>Yoosuf, Adil</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>9</td>
+                    <td>Afham Faiz</td>
+                    <td>Faiz, Afham</td>
+                    <td>23 JAN 2003</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>10</td>
+                    <td>Ahmed Ahusan</td>
+                    <td>Ahusan, Ahmed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>11</td>
+                    <td>Ahmed Ashir</td>
+                    <td>Ashir, Ahmed</td>
+                    <td>12 AUG 1962</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>12</td>
+                    <td>Ahmed Hytham Rasheed</td>
+                    <td>Rasheed, Ahmed Hytham</td>
+                    <td>3 JUL 1984</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>13</td>
+                    <td>Ahmed Naseem</td>
+                    <td>Naseem, Ahmed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>14</td>
+                    <td>Ahmed Rasheed</td>
+                    <td>Rasheed, Ahmed</td>
+                    <td>2 JUL 1978</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>15</td>
+                    <td>Ahmed Riyaz</td>
+                    <td>Riyaz, Ahmed</td>
+                    <td>29 OCT 1978</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>16</td>
+                    <td>Ahmed Yoosuf</td>
+                    <td>Yoosuf, Ahmed</td>
+                    <td>10 JAN 1950</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>17</td>
+                    <td>Aishath Amani Adam</td>
+                    <td>Adam, Aishath Amani</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>18</td>
+                    <td>Aishath Azza</td>
+                    <td>Azza, Aishath</td>
+                    <td>19 FEB 1980</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>19</td>
+                    <td>Aishath Nasiha</td>
+                    <td>Nasiha, Aishath</td>
+                    <td>20 OCT 1962</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>20</td>
+                    <td>Aishath Naziya</td>
+                    <td>Naziya, Aishath</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>21</td>
+                    <td>Aishath Shabana</td>
+                    <td>Shabana, Aishath</td>
+                    <td>18 FEB 1977</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>22</td>
+                    <td>Aishath Thuhufa</td>
+                    <td>Thuhufa, Aishath</td>
+                    <td>19 JUL 2001</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>23</td>
+                    <td>Aishath Zarahana</td>
+                    <td>Zarahana, Aishath</td>
+                    <td>17 JAN 1961</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>24</td>
+                    <td>Ali Afag</td>
+                    <td>Afag, Ali</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>25</td>
+                    <td>Ali Amir</td>
+                    <td>Amir, Ali</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>26</td>
+                    <td>Ali Latheef</td>
+                    <td>Latheef, Ali</td>
+                    <td>3 MAY 1969</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>27</td>
+                    <td>Ali Riyaz</td>
+                    <td>Riyaz, Ali</td>
+                    <td>29 AUG 1972</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>28</td>
+                    <td>Ali Shifau</td>
+                    <td>Shifau, Ali</td>
+                    <td>24 MAR 1971</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>29</td>
+                    <td>Ali Thahseen</td>
+                    <td>Thahseen, Ali</td>
+                    <td>19 FEB 1975</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>30</td>
+                    <td>Aminath Amna</td>
+                    <td>Amna, Aminath</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>31</td>
+                    <td>Aminath Asfan</td>
+                    <td>Asfan, Aminath</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>32</td>
+                    <td>Aminath Eman</td>
+                    <td>Eman, Aminath</td>
+                    <td>27 SEP 1976</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>33</td>
+                    <td>Aminath Haleem</td>
+                    <td>Haleem, Aminath</td>
+                    <td>3 JUN 1956</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>34</td>
+                    <td>Aminath Muna</td>
+                    <td>Muna, Aminath</td>
+                    <td>8 MAR 1964</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>35</td>
+                    <td>Aminath Samai Adam</td>
+                    <td>Adam, Aminath Samai</td>
+                    <td>1 JAN 1985</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>36</td>
+                    <td>Azka Afag</td>
+                    <td>Afag, Azka</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>37</td>
+                    <td>Bassam Rasheed</td>
+                    <td>Rasheed, Bassam</td>
+                    <td>6 MAR 1986</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>38</td>
+                    <td>Faiyliyaagey Ali Didi</td>
+                    <td>Didi, Faiyliyaagey Ali</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>39</td>
+                    <td>Fathmath Azmath</td>
+                    <td>Azmath, Fathmath</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>40</td>
+                    <td>Fathmath Nihan</td>
+                    <td>Nihan, Fathmath</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>41</td>
+                    <td>Fathmath Thooba</td>
+                    <td>Thooba, Fathmath</td>
+                    <td>14 JUL 1995</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>42</td>
+                    <td>Gia Ahmed</td>
+                    <td>Ahmed, Gia</td>
+                    <td>15 DEC 2008</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>43</td>
+                    <td>Hafeeza Ibrahim</td>
+                    <td>Ibrahim, Hafeeza</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>44</td>
+                    <td>Hagudheedhi Didi</td>
+                    <td>Didi, Hagudheedhi</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>45</td>
+                    <td>Hamid Mohamed</td>
+                    <td>Mohamed, Hamid</td>
+                    <td>4 FEB 1981</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>46</td>
+                    <td>Haseena Yoosuf</td>
+                    <td>Yoosuf, Haseena</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>47</td>
+                    <td>Hassan Fazeel</td>
+                    <td>Fazeel, Hassan</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>48</td>
+                    <td>Hassan Shujau</td>
+                    <td>Shujau, Hassan</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>49</td>
+                    <td>Hawwa Didi</td>
+                    <td>Didi, Hawwa</td>
+                    <td>1917</td>
+                    <td>25 NOV 2007</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>50</td>
+                    <td>Ibrahim Fulhu</td>
+                    <td>Fulhu, Ibrahim</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>51</td>
+                    <td>Ibrahim Gais Jilan</td>
+                    <td>Jilan, Ibrahim Gais</td>
+                    <td>10 NOV 2002</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>52</td>
+                    <td>Ibrahim Irufan</td>
+                    <td>Irufan, Ibrahim</td>
+                    <td>19 MAR 1986</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>53</td>
+                    <td>Ikurisha Amjad</td>
+                    <td>Amjad, Ikurisha</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>54</td>
+                    <td>Ishaq Ahmed</td>
+                    <td>Ahmed, Ishaq</td>
+                    <td>26 APR 1962</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>55</td>
+                    <td>Isharath Amjad</td>
+                    <td>Amjad, Isharath</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>56</td>
+                    <td>Ismail Mashroof</td>
+                    <td>Mashroof, Ismail</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>57</td>
+                    <td>Jaufar Yoosuf</td>
+                    <td>Yoosuf, Jaufar</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>58</td>
+                    <td>Khadeeja Leena</td>
+                    <td>Leena, Khadeeja</td>
+                    <td>26 DEC 1965</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>59</td>
+                    <td>Khadeeja Leeza</td>
+                    <td>Leeza, Khadeeja</td>
+                    <td>16 FEB 1983</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>60</td>
+                    <td>Khadeeja Limya</td>
+                    <td>Limya, Khadeeja</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>61</td>
+                    <td>Khadeeja Nada</td>
+                    <td>Nada, Khadeeja</td>
+                    <td>6 NOV 1976</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>62</td>
+                    <td>Laaik Ahmed</td>
+                    <td>Ahmed, Laaik</td>
+                    <td>14 JAN 2006</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>63</td>
+                    <td>Luziana Ibrahim</td>
+                    <td>Ibrahim, Luziana</td>
+                    <td>2 AUG 1971</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>64</td>
+                    <td>Mariyam Aroosha</td>
+                    <td>Aroosha, Mariyam</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>65</td>
+                    <td>Mariyam Lubna</td>
+                    <td>Lubna, Mariyam</td>
+                    <td>4 JUN 1971</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>66</td>
+                    <td>Mariyam Reema</td>
+                    <td>Reema, Mariyam</td>
+                    <td>11 SEP 1974</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>67</td>
+                    <td>Mariyam Shadiya</td>
+                    <td>Shadiya, Mariyam</td>
+                    <td>8 APR 1962</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>68</td>
+                    <td>Mohamed Afsar</td>
+                    <td>Afsar, Mohamed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>69</td>
+                    <td>Mohamed Ali</td>
+                    <td>Ali, Mohamed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>70</td>
+                    <td>Mohamed Azan</td>
+                    <td>Azan, Mohamed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>71</td>
+                    <td>Mohamed Azzam</td>
+                    <td>Azzam, Mohamed</td>
+                    <td>18 MAY 1982</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>72</td>
+                    <td>Mohamed Faiz</td>
+                    <td>Faiz, Mohamed</td>
+                    <td>26 DEC 1966</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>73</td>
+                    <td>Mohamed Fazeel</td>
+                    <td>Fazeel, Mohamed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>74</td>
+                    <td>Mohamed Ihusan</td>
+                    <td>Ihusan, Mohamed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>75</td>
+                    <td>Mohamed Jilan</td>
+                    <td>Jilan, Mohamed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>76</td>
+                    <td>Mohamed Khumal</td>
+                    <td>Khumal, Mohamed</td>
+                    <td>25 MAR 2001</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>77</td>
+                    <td>Mohamed Maniku</td>
+                    <td>Maniku, Mohamed</td>
+                    <td>N/A</td>
+                    <td>1971</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>78</td>
+                    <td>Mohamed Nazim</td>
+                    <td>Nazim, Mohamed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>79</td>
+                    <td>Mohamed Riyaz</td>
+                    <td>Riyaz, Mohamed</td>
+                    <td>24 AUG 1970</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>80</td>
+                    <td>Mohamed Sharath Amjad</td>
+                    <td>Amjad, Mohamed Sharath</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>81</td>
+                    <td>Mohamed Shareef</td>
+                    <td>Shareef, Mohamed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>82</td>
+                    <td>Nazeera Yoosuf</td>
+                    <td>Yoosuf, Nazeera</td>
+                    <td>1952</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>83</td>
+                    <td>Rabiya Yoosuf</td>
+                    <td>Yoosuf, Rabiya</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>84</td>
+                    <td>Roanugey Moosa Didi</td>
+                    <td>Didi, Roanugey Moosa</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>85</td>
+                    <td>Saikuraa Hassan Kaleyfaan</td>
+                    <td>Kaleyfaan, Saikuraa Hassan</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>86</td>
+                    <td>Saikuraa Koi</td>
+                    <td>Koi, Saikuraa</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>87</td>
+                    <td>Shamsiyya Hassan</td>
+                    <td>Hassan, Shamsiyya</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>88</td>
+                    <td>Shareefa Ismail</td>
+                    <td>Ismail, Shareefa</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>89</td>
+                    <td>Sharhooz Amjad</td>
+                    <td>Amjad, Sharhooz</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>90</td>
+                    <td>Zahura Yoosuf</td>
+                    <td>Yoosuf, Zahura</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>91</td>
+                    <td>Zuhudha Rasheed</td>
+                    <td>Rasheed, Zuhudha</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>92</td>
+                    <td>Zulaikha Maee</td>
+                    <td>Maee, Zulaikha</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+                <tr class="match-exact">
+                    <td>93</td>
+                    <td>Zulaikha Neema</td>
+                    <td>Neema, Zulaikha</td>
+                    <td>13 MAR 1980</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-success">EXACT</span></td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>⚠️ Fuzzy/Approximate Matches (78)</h2>
+        <p>These are potential matches with similarity ≥70%. Please review manually.</p>
+        <div class="filter-box">
+            <input type="text" id="fuzzyFilter" onkeyup="filterTable('fuzzyTable', 'fuzzyFilter')"
+                   placeholder="Search fuzzy matches...">
+        </div>
+        <table id="fuzzyTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>MyHeritage Name</th>
+                    <th>Tribal Name</th>
+                    <th>Similarity %</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr class="match-fuzzy">
+                    <td>1</td>
+                    <td>Roanugey Fathimath Didi</td>
+                    <td>Didi, Roanugey Fathmath</td>
+                    <td><span class="similarity">97.8%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>2</td>
+                    <td>Maakoshaaru Manike</td>
+                    <td>Manike', Maakoshaaru</td>
+                    <td><span class="similarity">97.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>3</td>
+                    <td>Mariyam Liyaa Ziyan</td>
+                    <td>Zian, Mariyam Liyaa</td>
+                    <td><span class="similarity">97.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>4</td>
+                    <td>Fathmath Rukshana</td>
+                    <td>Rukshana, Fathimath</td>
+                    <td><span class="similarity">97.1%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>5</td>
+                    <td>Raedh Ali Latheef</td>
+                    <td>Ali Latheef, Raed</td>
+                    <td><span class="similarity">97.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>6</td>
+                    <td>Khadeeja Salwa</td>
+                    <td>Salwa, Khadheeja</td>
+                    <td><span class="similarity">96.6%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>7</td>
+                    <td>Fathmath Hana</td>
+                    <td>Hana, Fathimath</td>
+                    <td><span class="similarity">96.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>8</td>
+                    <td>Aminath Subah</td>
+                    <td>Subath, Aminath</td>
+                    <td><span class="similarity">96.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>9</td>
+                    <td>Mariyam Manaal</td>
+                    <td>Manal, Mariyam</td>
+                    <td><span class="similarity">96.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>10</td>
+                    <td>Mohamed Niyad</td>
+                    <td>Niyad, Mohammed</td>
+                    <td><span class="similarity">96.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>11</td>
+                    <td>Amjadh Yoosuf</td>
+                    <td>Yoosuf, Amjad</td>
+                    <td><span class="similarity">96.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>12</td>
+                    <td>Ismail Fahir</td>
+                    <td>Fakhir, Ismail</td>
+                    <td><span class="similarity">96.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>13</td>
+                    <td>Aika Mishal</td>
+                    <td>Mishaal, Aika</td>
+                    <td><span class="similarity">95.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>14</td>
+                    <td>Ahmed Ziyan</td>
+                    <td>Zian, Ahmed</td>
+                    <td><span class="similarity">95.2%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>15</td>
+                    <td>Raiygey Aisaa Fulhu</td>
+                    <td>Fulhu, Raiygey Aisha</td>
+                    <td><span class="similarity">94.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>16</td>
+                    <td>Saikuraa Dhon thuthu</td>
+                    <td>Dhonthuththu, Saikuraa</td>
+                    <td><span class="similarity">92.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>17</td>
+                    <td>Aishath Adam</td>
+                    <td>Adam, Aishath A.</td>
+                    <td><span class="similarity">92.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>18</td>
+                    <td>Hussein Riyaz</td>
+                    <td>Riyaz, Hussain</td>
+                    <td><span class="similarity">92.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>19</td>
+                    <td>Faiyliyaage Thuthu Didi</td>
+                    <td>Thuththudidi, Faiyliyaagey</td>
+                    <td><span class="similarity">91.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>20</td>
+                    <td>Ahmed Ashfag</td>
+                    <td>Ashfaq, Ahmed</td>
+                    <td><span class="similarity">91.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>21</td>
+                    <td>Asthana Amir</td>
+                    <td>Amir, Aasthaanaa</td>
+                    <td><span class="similarity">88.9%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>22</td>
+                    <td>Gayash</td>
+                    <td>x, Gayash</td>
+                    <td><span class="similarity">85.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>23</td>
+                    <td>Fathmath Anaan</td>
+                    <td>Hana, Fathimath</td>
+                    <td><span class="similarity">85.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>24</td>
+                    <td>Nazima</td>
+                    <td>X, Nazima</td>
+                    <td><span class="similarity">85.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>25</td>
+                    <td>Salman</td>
+                    <td>X, Salman</td>
+                    <td><span class="similarity">85.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>26</td>
+                    <td>Faiyliyaagey (Fethuri) Ahmed Didi</td>
+                    <td>Didi, Faiyliyaagey Ahmed</td>
+                    <td><span class="similarity">85.2%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>27</td>
+                    <td>Roanugey bodu Didi</td>
+                    <td>Didi, Roanugey M.</td>
+                    <td><span class="similarity">84.8%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>28</td>
+                    <td>Zulaikha (Inya) Neena</td>
+                    <td>Neena, Zulaikha</td>
+                    <td><span class="similarity">84.8%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>29</td>
+                    <td>Shehenaz</td>
+                    <td>XX, Shehenaz</td>
+                    <td><span class="similarity">84.2%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>30</td>
+                    <td>Saikuraa Thuthu</td>
+                    <td>Dhonthuththu, Saikuraa</td>
+                    <td><span class="similarity">83.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>31</td>
+                    <td>Zalaf</td>
+                    <td>x, Zalaf</td>
+                    <td><span class="similarity">83.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>32</td>
+                    <td>Shifa</td>
+                    <td>Shifa, x</td>
+                    <td><span class="similarity">83.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>33</td>
+                    <td>Aishath Ainee Ali</td>
+                    <td>Aini, Aishath</td>
+                    <td><span class="similarity">82.8%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>34</td>
+                    <td>Fathmath Malsa Maaz</td>
+                    <td>Malsa, Fathimath</td>
+                    <td><span class="similarity">82.4%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>35</td>
+                    <td>Abidha Yoosuf</td>
+                    <td>Yoosuf, Abdul A.</td>
+                    <td><span class="similarity">81.5%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>36</td>
+                    <td>Ali Yazdhan Maaz</td>
+                    <td>Yazdhan, Ali</td>
+                    <td><span class="similarity">81.5%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>37</td>
+                    <td>Aminath Salah</td>
+                    <td>Adam, Aminath S.</td>
+                    <td><span class="similarity">81.5%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>38</td>
+                    <td>Fathmath Shareef</td>
+                    <td>Haleem, Fathimath</td>
+                    <td><span class="similarity">81.2%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>39</td>
+                    <td>Mohamed Rasheed</td>
+                    <td>Yoosuf, Mohamed Rasheed</td>
+                    <td><span class="similarity">81.1%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>40</td>
+                    <td>Mohamed Rasheed</td>
+                    <td>Yoosuf, Mohamed Rasheed</td>
+                    <td><span class="similarity">81.1%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>41</td>
+                    <td>Ismail</td>
+                    <td>xx, Ismail</td>
+                    <td><span class="similarity">80.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>42</td>
+                    <td>Suma</td>
+                    <td>Suma, x</td>
+                    <td><span class="similarity">80.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>43</td>
+                    <td>Ahmed Rashwan</td>
+                    <td>Ashfaq, Ahmed</td>
+                    <td><span class="similarity">80.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>44</td>
+                    <td>Mohamed Aan Hussain</td>
+                    <td>Lassan, Mohamed</td>
+                    <td><span class="similarity">78.8%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>45</td>
+                    <td>Foolhu maage Dhon didi</td>
+                    <td>Dhondheedhi, Foolhumaagey</td>
+                    <td><span class="similarity">78.3%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>46</td>
+                    <td>Saikuraa Medhu Huthu</td>
+                    <td>Dhonthuththu, Saikuraa</td>
+                    <td><span class="similarity">78.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>47</td>
+                    <td>Alaniya</td>
+                    <td>Alaaniya, xx</td>
+                    <td><span class="similarity">77.8%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>48</td>
+                    <td>Saikura Lha Thuthu</td>
+                    <td>Dhonthuththu, Saikuraa</td>
+                    <td><span class="similarity">76.9%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>49</td>
+                    <td>Aishath Afreen</td>
+                    <td>Aini, Aishath</td>
+                    <td><span class="similarity">76.9%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>50</td>
+                    <td>Hassan Hagu Didi</td>
+                    <td>Hagudheedhi, Hassan</td>
+                    <td><span class="similarity">76.5%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>51</td>
+                    <td>Abdullah Saleem</td>
+                    <td>Samiya, Abdulla</td>
+                    <td><span class="similarity">75.9%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>52</td>
+                    <td>Fathmath Manike</td>
+                    <td>Hana, Fathimath</td>
+                    <td><span class="similarity">75.9%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>53</td>
+                    <td>Ibrahim Waheed</td>
+                    <td>Mohamed, Ibrahim</td>
+                    <td><span class="similarity">75.9%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>54</td>
+                    <td>Kakaage Dhon Didi</td>
+                    <td>Dhondheedhi, Kakaagey</td>
+                    <td><span class="similarity">75.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>55</td>
+                    <td>Reesha Rasheed</td>
+                    <td>Rasheed, Fathmath Reesha</td>
+                    <td><span class="similarity">75.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>56</td>
+                    <td>Ahmed Shujau</td>
+                    <td>Ashfaq, Ahmed</td>
+                    <td><span class="similarity">75.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>57</td>
+                    <td>Ali</td>
+                    <td>G, Ali</td>
+                    <td><span class="similarity">75.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>58</td>
+                    <td>Shanan</td>
+                    <td>Shanaan, xx</td>
+                    <td><span class="similarity">75.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>59</td>
+                    <td>Mohamed Naeem</td>
+                    <td>Aan, Mohamed</td>
+                    <td><span class="similarity">75.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>60</td>
+                    <td>Mohamed Naeem</td>
+                    <td>Aan, Mohamed</td>
+                    <td><span class="similarity">75.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>61</td>
+                    <td>Ahmed Shiyam</td>
+                    <td>Ashfaq, Ahmed</td>
+                    <td><span class="similarity">75.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>62</td>
+                    <td>Aminath Naeem</td>
+                    <td>Adam, Aminath S.</td>
+                    <td><span class="similarity">74.1%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>63</td>
+                    <td>Aishath Layal</td>
+                    <td>Adam, Aishath A.</td>
+                    <td><span class="similarity">74.1%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>64</td>
+                    <td>Ahmed Adam</td>
+                    <td>Ashfaq, Ahmed</td>
+                    <td><span class="similarity">72.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>65</td>
+                    <td>Shaneeza</td>
+                    <td>Ahmed, Shaneeza</td>
+                    <td><span class="similarity">72.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>66</td>
+                    <td>Ham Riyaz</td>
+                    <td>Riyaz, Hussain</td>
+                    <td><span class="similarity">72.7%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>67</td>
+                    <td>Hawwa (Hafeeza) Didi</td>
+                    <td>Didi (Hafeeza), Hawwa</td>
+                    <td><span class="similarity">72.2%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>68</td>
+                    <td>Mohamed Saleem</td>
+                    <td>Aan, Mohamed</td>
+                    <td><span class="similarity">72.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>69</td>
+                    <td>Aisa Fulhu</td>
+                    <td>Fulhu, Raiygey A.</td>
+                    <td><span class="similarity">72.0%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>70</td>
+                    <td>Saikura Kuda Huthu</td>
+                    <td>Dhonthuththu, Saikuraa</td>
+                    <td><span class="similarity">71.8%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>71</td>
+                    <td>Fazla Haleem</td>
+                    <td>Haleem, Fathimath</td>
+                    <td><span class="similarity">71.4%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>72</td>
+                    <td>Aidhu</td>
+                    <td>Ali, Aidhu</td>
+                    <td><span class="similarity">71.4%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>73</td>
+                    <td>Aminath Uyoon</td>
+                    <td>Jaushan, Aminath</td>
+                    <td><span class="similarity">71.4%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>74</td>
+                    <td>Ibrahim Naeem</td>
+                    <td>Mohamed, Ibrahim</td>
+                    <td><span class="similarity">71.4%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>75</td>
+                    <td>Inaya Mohamed</td>
+                    <td>Mohamed, Ibrahim</td>
+                    <td><span class="similarity">71.4%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>76</td>
+                    <td>Ulaa Naeem</td>
+                    <td>Naeem, X</td>
+                    <td><span class="similarity">70.6%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>77</td>
+                    <td>Mal Shifau</td>
+                    <td>Shifa, x</td>
+                    <td><span class="similarity">70.6%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+                <tr class="match-fuzzy">
+                    <td>78</td>
+                    <td>Vakaolhi Dhon Kamana (fathuma fulhu)</td>
+                    <td>Dhonkamana, Vaka-olhi</td>
+                    <td><span class="similarity">70.4%</span></td>
+                    <td><span class="badge badge-warning">FUZZY</span></td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>❌ Only in MyHeritage (132)</h2>
+        <p>People found in MyHeritage GEDCOM but not in Tribal extraction. Shows parents if available, otherwise adult children.</p>
+        <div class="filter-box">
+            <input type="text" id="mhOnlyFilter" onkeyup="filterTable('mhOnlyTable', 'mhOnlyFilter')"
+                   placeholder="Search MyHeritage only...">
+        </div>
+        <table id="mhOnlyTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Family Context</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr class="no-match">
+                    <td>1</td>
+                    <td>Aara Hassan Fazeel</td>
+                    <td>Father: Hassan Fazeel | Mother: Aishath Shabana</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>2</td>
+                    <td>Abdul (Baboo) Gadhir</td>
+                    <td>Children: Ahmed Ashfag, Mohamed Fazeel, Ali Afag (+1 more)</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>3</td>
+                    <td>Abdul Muthallib Waheed</td>
+                    <td>Father: Shareefa Ibrahim (Raifusge Dhatha) Didi | Mother: Ibrahim Waheed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>4</td>
+                    <td>Abdullah (Lhaseedhi) Waheed</td>
+                    <td>Father: Shareefa Ibrahim (Raifusge Dhatha) Didi | Mother: Ibrahim Waheed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>5</td>
+                    <td>Ahad</td>
+                    <td>Father: Mohamed Sharath Amjad | Mother: Nanna</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>6</td>
+                    <td>Ahmed Naeem</td>
+                    <td>Father: Saikura Lha Thuthu | Mother: Aisa Fulhu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>7</td>
+                    <td>Ahmed Saleem</td>
+                    <td>Father: Haajee hokko alifulhuge Dhonthuthuge dhon maniku | Mother: Dhondhee Kuda huthu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>8</td>
+                    <td>Ahuzam Faiz</td>
+                    <td>Father: Khadeeja Salwa | Mother: Mohamed Faiz</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>9</td>
+                    <td>Alba Knusden</td>
+                    <td>Father: Reesha Rasheed | Mother: Rasmus Knusden</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>10</td>
+                    <td>Ali (Addu Ali Fulhu) Shameem</td>
+                    <td>Children: Nadhir, Nazi</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>11</td>
+                    <td>Ali Saleem</td>
+                    <td>Father: Bodu Hitthibe | Mother: Ummu Kulsum yoosuf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>12</td>
+                    <td>Aman Waheed</td>
+                    <td>Father: Abdullah (Lhaseedhi) Waheed | Mother: Aishath Zarahana</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>13</td>
+                    <td>Ameer</td>
+                    <td>Father: Khadeeja Naeem | Mother: Ahmed Shiyam</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>14</td>
+                    <td>Ameera</td>
+                    <td>Father: Dhayyin | Mother: Aishath Layal</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>15</td>
+                    <td>Amina didi</td>
+                    <td>Father: Faiyliyaagey Ali Didi | Mother: Roanugey Fathimath Didi</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>16</td>
+                    <td>Aminath (Nuxoo)</td>
+                    <td>Children: Ayah, Haya</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>17</td>
+                    <td>Aminath Eenaz</td>
+                    <td>Father: Inaya Mohamed | Mother: Habaru Shaukath</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>18</td>
+                    <td>Areen Hassan Fazeel</td>
+                    <td>Father: Hassan Fazeel | Mother: Aishath Shabana</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>19</td>
+                    <td>Ashfag</td>
+                    <td>Father: Ahmed Ashfag | Mother: Shifa</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>20</td>
+                    <td>Ashraf</td>
+                    <td>Children: Hammam Ashraf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>21</td>
+                    <td>Ayah</td>
+                    <td>Father: Ibrahim Irufan | Mother: Aminath (Nuxoo)</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>22</td>
+                    <td>Ayan Afag</td>
+                    <td>Father: Ali Afag | Mother: Shamsiyya Hassan</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>23</td>
+                    <td>Bilaalu Ibrahim Didi</td>
+                    <td>Father: Faiyliyaagey Ali Didi | Mother: Roanugey Fathimath Didi</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>24</td>
+                    <td>Bilal</td>
+                    <td>Father: Mariyam Manaal | Mother: Salman</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>25</td>
+                    <td>Bodu Hitthibe</td>
+                    <td>Children: Mohamed Saleem, Naseera, Abdullah Saleem (+5 more)</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>26</td>
+                    <td>Bondi Baiy Gasim Kaleyfan</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>27</td>
+                    <td>Chandhanee Mohamed fulhu</td>
+                    <td>Children: Mausooma, Suzee, Ahmed Shujau (+4 more)</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>28</td>
+                    <td>Dhambugey Fauziya</td>
+                    <td>Father: Shareefa Ibrahim (Raifusge Dhatha) Didi | Mother: Dhambugey Ibrahim Didi</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>29</td>
+                    <td>Dhambugey Ibrahim Didi</td>
+                    <td>Children: Dhambugey Fauziya</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>30</td>
+                    <td>Dhayyin</td>
+                    <td>Children: Ameera</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>31</td>
+                    <td>Dhon Maniku</td>
+                    <td>Children: Thoufeeq, Fareedha, Mursheedha</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>32</td>
+                    <td>Dhondhee Kuda huthu</td>
+                    <td>Children: Ahmed Saleem, Hussein Saleem, Saleema</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>33</td>
+                    <td>Eeza Rasheed</td>
+                    <td>Father: Ahmed Hytham Rasheed | Mother: Hawwu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>34</td>
+                    <td>Elai Azzam</td>
+                    <td>Father: Mohamed Azzam | Mother: Naani</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>35</td>
+                    <td>Ezekiel Rasheed</td>
+                    <td>Father: Ahmed Hytham Rasheed | Mother: Hawwu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>36</td>
+                    <td>Fareed</td>
+                    <td>Children: Inan Fareed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>37</td>
+                    <td>Fareedha</td>
+                    <td>Father: Dhon Maniku | Mother: Abidha Yoosuf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>38</td>
+                    <td>Ghithfan Amir</td>
+                    <td>Father: Fathmath Hana | Mother: Asthana Amir</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>39</td>
+                    <td>Ghufran Rasheed</td>
+                    <td>Father: Aminath Naeem | Mother: Mohamed Rasheed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>40</td>
+                    <td>Haajee hokko alifulhuge Dhonthuthuge dhon maniku</td>
+                    <td>Children: Ummu Kulsum yoosuf, Abidha Yoosuf, Rasheedha (+3 more)</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>41</td>
+                    <td>Habaru Shaukath</td>
+                    <td>Children: Rishwan, Rickzan, Aminath Eenaz</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>42</td>
+                    <td>Hajar Mashroof</td>
+                    <td>Father: Ismail Mashroof | Mother: Nasy Saleem</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>43</td>
+                    <td>Hamidha</td>
+                    <td>Children: Mohamed Naeem, Shaheen Naeem, Ahmed Naeem</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>44</td>
+                    <td>Hammam Ashraf</td>
+                    <td>Father: Ashraf | Mother: Aminath Samai Adam</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>45</td>
+                    <td>Hawwa</td>
+                    <td>Children: Yoosuf Ahmed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>46</td>
+                    <td>Hawwa Fulhu</td>
+                    <td>Children: Ibrahim Naeem, Hussein Naeem, Rasheedha Naeem</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>47</td>
+                    <td>Hawwu</td>
+                    <td>Children: Ezekiel Rasheed, Eeza Rasheed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>48</td>
+                    <td>Haya</td>
+                    <td>Father: Ibrahim Irufan | Mother: Aminath (Nuxoo)</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>49</td>
+                    <td>Huraa Abdul Sattar</td>
+                    <td>Mother: Saikuraa Medhu Huthu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>50</td>
+                    <td>Hussein Naeem</td>
+                    <td>Father: Saikura Lha Thuthu | Mother: Hawwa Fulhu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>51</td>
+                    <td>Hussein Saleem</td>
+                    <td>Father: Haajee hokko alifulhuge Dhonthuthuge dhon maniku | Mother: Dhondhee Kuda huthu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>52</td>
+                    <td>Hussein Shimal (Kooku) Yoosuf</td>
+                    <td>Children: Yafi Shimal Yoosuf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>53</td>
+                    <td>Hussein Shujau</td>
+                    <td>Father: Chandhanee Mohamed fulhu | Mother: Rasheedha</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>54</td>
+                    <td>Iaan Thahseen</td>
+                    <td>Father: Ali Thahseen | Mother: Fazla Haleem</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>55</td>
+                    <td>Ibrahim Didi</td>
+                    <td>Children: Shareefa Ibrahim (Raifusge Dhatha) Didi</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>56</td>
+                    <td>Ibrahim Shujau</td>
+                    <td>Father: Chandhanee Mohamed fulhu | Mother: Rasheedha</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>57</td>
+                    <td>Ilyas Ahmed</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>58</td>
+                    <td>Imran Rushdee</td>
+                    <td>Father: Khadeeja Naeem | Mother: Kelaage Baaree</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>59</td>
+                    <td>Inan Fareed</td>
+                    <td>Father: Nazi | Mother: Fareed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>60</td>
+                    <td>Irufohey Dhon Maniku</td>
+                    <td>Children: Fathmath Manike</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>61</td>
+                    <td>Isha</td>
+                    <td>Father: Mohamed Sharath Amjad | Mother: Nanna</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>62</td>
+                    <td>Ishala Shalie</td>
+                    <td>Father: Zulaikha (Inya) Neena | Mother: Adam Fulhu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>63</td>
+                    <td>Ishan Saeed</td>
+                    <td>Children: Naala Ishan Saeed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>64</td>
+                    <td>Ishiya</td>
+                    <td>Father: Mariyam Manaal</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>65</td>
+                    <td>Ismail Shujau</td>
+                    <td>Father: Chandhanee Mohamed fulhu | Mother: Rasheedha</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>66</td>
+                    <td>Iz-aan Ahmed  Rashwan</td>
+                    <td>Father: Ahmed Rashwan | Mother: Zulaikha Maee</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>67</td>
+                    <td>Jaushan</td>
+                    <td>Father: Aishath Nasiha | Mother: Ahmed Ashir</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>68</td>
+                    <td>Jude Riyaz</td>
+                    <td>Father: Aminath Eman | Mother: Hussein Riyaz</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>69</td>
+                    <td>Juman</td>
+                    <td>Father: Aminath Muna | Mother: Ishaq Ahmed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>70</td>
+                    <td>Jumana</td>
+                    <td>Father: Aminath Muna | Mother: Ishaq Ahmed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>71</td>
+                    <td>Kain</td>
+                    <td>Father: Gayash | Mother: Ikurisha Amjad</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>72</td>
+                    <td>Kelaage Baaree</td>
+                    <td>Children: Imran Rushdee</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>73</td>
+                    <td>Khadeeja Naeem</td>
+                    <td>Father: Saikura Lha Thuthu | Mother: Aisa Fulhu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>74</td>
+                    <td>Khaleel</td>
+                    <td>Children: Zalaf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>75</td>
+                    <td>Kylie</td>
+                    <td>Father: Maugal | Mother: Malaak Koky</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>76</td>
+                    <td>Lara Mohamed Shareef</td>
+                    <td>Father: Mariyam Reema | Mother: Mohamed Shareef</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>77</td>
+                    <td>Lassan</td>
+                    <td>Father: Aishath Nasiha | Mother: Ahmed Ashir</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>78</td>
+                    <td>Leevan Mohamed Shareef</td>
+                    <td>Father: Mariyam Reema | Mother: Mohamed Shareef</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>79</td>
+                    <td>Liam Shareef</td>
+                    <td>Father: Mariyam Reema | Mother: Mohamed Shareef</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>80</td>
+                    <td>Libaa Rasheed</td>
+                    <td>Father: Bassam Rasheed | Mother: Udhla Latheef</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>81</td>
+                    <td>Liyana Ihusan</td>
+                    <td>Father: Mohamed Ihusan | Mother: Nahu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>82</td>
+                    <td>Luke Mohamed Shareef</td>
+                    <td>Father: Mariyam Reema | Mother: Mohamed Shareef</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>83</td>
+                    <td>Mahin Amir</td>
+                    <td>Father: Ali Amir | Mother: Nazima</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>84</td>
+                    <td>Malaak Koky</td>
+                    <td>Father: Zulaikha (Inya) Neena | Mother: Adam Fulhu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>85</td>
+                    <td>Manadoo Easa Khadeeja</td>
+                    <td>Children: Maakoshaaru Manike</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>86</td>
+                    <td>Mashroof</td>
+                    <td>Father: Ismail Mashroof | Mother: Nasy Saleem</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>87</td>
+                    <td>Maugal</td>
+                    <td>Children: Kylie</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>88</td>
+                    <td>Mausooma</td>
+                    <td>Father: Chandhanee Mohamed fulhu | Mother: Rasheedha</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>89</td>
+                    <td>Mizyan Naeem</td>
+                    <td>Father: Mohamed Naeem | Mother: Fathmath Shareef</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>90</td>
+                    <td>Mursheedha</td>
+                    <td>Father: Dhon Maniku | Mother: Abidha Yoosuf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>91</td>
+                    <td>Naala Ishan Saeed</td>
+                    <td>Father: Khadeeja Leeza | Mother: Ishan Saeed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>92</td>
+                    <td>Naani</td>
+                    <td>Children: Elai Azzam</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>93</td>
+                    <td>Nadhir</td>
+                    <td>Father: Ali (Addu Ali Fulhu) Shameem | Mother: Zareena</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>94</td>
+                    <td>Nahu</td>
+                    <td>Children: Liyana Ihusan</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>95</td>
+                    <td>Nanna</td>
+                    <td>Children: Ahad, Isha</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>96</td>
+                    <td>Naseera</td>
+                    <td>Father: Bodu Hitthibe | Mother: Ummu Kulsum yoosuf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>97</td>
+                    <td>Nasy Saleem</td>
+                    <td>Children: Hajar Mashroof, Mashroof</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>98</td>
+                    <td>Nazi</td>
+                    <td>Father: Ali (Addu Ali Fulhu) Shameem | Mother: Zareena</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>99</td>
+                    <td>Nooh</td>
+                    <td>Father: Mariyam Manaal | Mother: Salman</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>100</td>
+                    <td>Ramiz</td>
+                    <td>Children: Shahdhu, Shaba</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>101</td>
+                    <td>Rasheedha</td>
+                    <td>Father: Haajee hokko alifulhuge Dhonthuthuge dhon maniku | Mother: Amina didi</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>102</td>
+                    <td>Rasheedha Naeem</td>
+                    <td>Father: Saikura Lha Thuthu | Mother: Hawwa Fulhu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>103</td>
+                    <td>Rasmus Knusden</td>
+                    <td>Children: Alba Knusden</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>104</td>
+                    <td>Raushan</td>
+                    <td>Father: Aishath Nasiha | Mother: Ahmed Ashir</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>105</td>
+                    <td>Reetho</td>
+                    <td>N/A</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>106</td>
+                    <td>Rickzan</td>
+                    <td>Father: Inaya Mohamed | Mother: Habaru Shaukath</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>107</td>
+                    <td>Rishwan</td>
+                    <td>Father: Inaya Mohamed | Mother: Habaru Shaukath</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>108</td>
+                    <td>Ronu hassan manik Manik</td>
+                    <td>Children: Roanugey bodu Didi</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>109</td>
+                    <td>Saleema</td>
+                    <td>Father: Haajee hokko alifulhuge Dhonthuthuge dhon maniku | Mother: Dhondhee Kuda huthu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>110</td>
+                    <td>Samiya Abdullah</td>
+                    <td>Children: Mariyam Liyaa Ziyan, Ziyan</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>111</td>
+                    <td>Shaba</td>
+                    <td>Father: Shaheen Naeem | Mother: Ramiz</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>112</td>
+                    <td>Shadiya</td>
+                    <td>Father: Bodu Hitthibe | Mother: Ummu Kulsum yoosuf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>113</td>
+                    <td>Shahdhu</td>
+                    <td>Father: Shaheen Naeem | Mother: Ramiz</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>114</td>
+                    <td>Shaheen Naeem</td>
+                    <td>Father: Hussein Naeem | Mother: Hamidha</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>115</td>
+                    <td>Shain</td>
+                    <td>Father: Sharhooz Amjad | Mother: Shehenaz</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>116</td>
+                    <td>Shareefa</td>
+                    <td>Children: Inaya Mohamed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>117</td>
+                    <td>Shareefa Ibrahim (Raifusge Dhatha) Didi</td>
+                    <td>Father: Roanugey Fathimath Didi | Mother: Ibrahim Didi</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>118</td>
+                    <td>Shazly</td>
+                    <td>Children: Mal Shifau</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>119</td>
+                    <td>Shimla</td>
+                    <td>Father: Bodu Hitthibe | Mother: Ummu Kulsum yoosuf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>120</td>
+                    <td>Suma Afag</td>
+                    <td>Father: Ali Afag | Mother: Shamsiyya Hassan</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>121</td>
+                    <td>Suzaa</td>
+                    <td>Father: Chandhanee Mohamed fulhu | Mother: Rasheedha</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>122</td>
+                    <td>Suzee</td>
+                    <td>Father: Chandhanee Mohamed fulhu | Mother: Rasheedha</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>123</td>
+                    <td>Thoufeeq</td>
+                    <td>Father: Dhon Maniku | Mother: Abidha Yoosuf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>124</td>
+                    <td>Udhla Latheef</td>
+                    <td>Children: Libaa Rasheed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>125</td>
+                    <td>Ummu Kulsum yoosuf</td>
+                    <td>Father: Haajee hokko alifulhuge Dhonthuthuge dhon maniku | Mother: Amina didi</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>126</td>
+                    <td>Yafi Shimal Yoosuf</td>
+                    <td>Father: Hussein Shimal (Kooku) Yoosuf | Mother: Fathmath Anaan</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>127</td>
+                    <td>Yalan Waheed</td>
+                    <td>Father: Abdullah (Lhaseedhi) Waheed | Mother: Aishath Zarahana</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>128</td>
+                    <td>Yoosuf Ahmed</td>
+                    <td>Father: Ahmed Adam | Mother: Hawwa</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>129</td>
+                    <td>Zareena</td>
+                    <td>Mother: Saikuraa Medhu Huthu</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>130</td>
+                    <td>Ziyan</td>
+                    <td>Father: Ahmed Ziyan | Mother: Samiya Abdullah</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>131</td>
+                    <td>Zuhura Waheed</td>
+                    <td>Father: Shareefa Ibrahim (Raifusge Dhatha) Didi | Mother: Ibrahim Waheed</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+                <tr class="no-match">
+                    <td>132</td>
+                    <td>Zuleykhaa</td>
+                    <td>Father: Bodu Hitthibe | Mother: Ummu Kulsum yoosuf</td>
+                    <td><span class="badge badge-danger">MISSING</span></td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>➕ Only in Tribal Extraction (60)</h2>
+        <p>Names found in Tribal extraction but not in MyHeritage GEDCOM. Shows parents if available, otherwise children.</p>
+        <div class="filter-box">
+            <input type="text" id="tribalOnlyFilter" onkeyup="filterTable('tribalOnlyTable', 'tribalOnlyFilter')"
+                   placeholder="Search Tribal only...">
+        </div>
+        <table id="tribalOnlyTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Family Context</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>1</td>
+                    <td>Abdul Gadhir, Baboo</td>
+                    <td>Fazeel, Mohamed, Ashfaq, Ahmed</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>2</td>
+                    <td>Adam, Ishala</td>
+                    <td>Neena, Zulaikha, Fulhu, Adam</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>3</td>
+                    <td>Ahmed, Jumaan</td>
+                    <td>Muna, Aminath, Ahmed, Ishaq</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>4</td>
+                    <td>Ahmed, Jumana</td>
+                    <td>Muna, Aminath, Ahmed, Ishaq</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>5</td>
+                    <td>Amir, Aasthaanaa A.</td>
+                    <td>Hana, Fathimath</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>6</td>
+                    <td>Amir, Aasthaanaa Ali</td>
+                    <td>Ghithfan, Ahmed</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>7</td>
+                    <td>Ashruf, Abdullah</td>
+                    <td>Adam, Aminath S., Rukshana, Fathimath</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>8</td>
+                    <td>Ashwin, X</td>
+                    <td>Adam, Aishath A., Rukshana, Fathimath</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>9</td>
+                    <td>Badi-alibeygey, Dhonseedhi</td>
+                    <td>Dhaannaagey, Siththi, Haleem, Aminath</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>10</td>
+                    <td>Dhaannaagey, Siththi</td>
+                    <td>Haleem, Aminath, S'Kilegefaanuge', Dhosheeseedhi</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>11</td>
+                    <td>Dhondheedhi, Sikka</td>
+                    <td>S'Kilegefaanuge', Dhosheeseedhi, Badi-alibeygey, Dhonseedhi</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>12</td>
+                    <td>Didi, Faiyliyaagey</td>
+                    <td>Didi, Faiyliyaagey A., Didi, Hawwa</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>13</td>
+                    <td>Didi, Faiyliyaagey A.</td>
+                    <td>Didi, Roanugey, Manike', Maakoshaaru</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>14</td>
+                    <td>Didi, Hagudheedhi I.</td>
+                    <td>Dhondheedhi, Foolhumaagey</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>15</td>
+                    <td>Didi, Hagudheedhi Ibrahim</td>
+                    <td>Didi, Roanugey, Hagudheedhi, Hassan D.</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>16</td>
+                    <td>Didi, Roanugey</td>
+                    <td>Didi, Faiyliyaagey A., Didi, Hawwa</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>17</td>
+                    <td>Didi, Roanugey F.</td>
+                    <td>Didi, Faiyliyaagey A.</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>18</td>
+                    <td>Fazeel, Mohamed Areen</td>
+                    <td>Shabana, Aishath, Fazeel, Hassan</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>19</td>
+                    <td>Fulhu, Raiygey</td>
+                    <td>Kaleyfaan, Saikuraa</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>20</td>
+                    <td>Gayash, Kain</td>
+                    <td>Amjad, Ikurisha, x, Gayash</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>21</td>
+                    <td>Ghithfan, Ahmed</td>
+                    <td>Amir, Aasthaanaa, Hana, Fathimath</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>22</td>
+                    <td>Hagudheedhi, Hassan D.</td>
+                    <td>Dhondheedhi, Kakaagey</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>23</td>
+                    <td>Hagudheedhi, Hassan Didi</td>
+                    <td>Didi, Hagudheedhi Ibrahim</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>24</td>
+                    <td>Haleem, Fathimath F.</td>
+                    <td>Thahseen, Ali</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>25</td>
+                    <td>Hassanmanik, Ali</td>
+                    <td>Didi, Hawwa, Fazeel, Mohamed</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>26</td>
+                    <td>Hussain, Shareefa</td>
+                    <td>Mohamed, Ibrahim, Shareef, Mohamed, Dr</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>27</td>
+                    <td>Ilyas, x</td>
+                    <td>Ibrahim, Luziana, Yoosuf, Zahura</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>28</td>
+                    <td>Kaamineegey, Siththi</td>
+                    <td>Dhaannaagey, Siththi, Meerubahuru, Seedhi</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>29</td>
+                    <td>Kakaagey, Mohamed</td>
+                    <td>x, Kaiydhaidhi, Dhaannaagey, Siththi</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>30</td>
+                    <td>Kakaagey, Mohamed D.</td>
+                    <td>Kaamineegey, Siththi</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>31</td>
+                    <td>Kakaagey, Mohamed Didi</td>
+                    <td>Dhaannaagey, Siththi, Kakaagey, Mohamed R/Kilegefaanu</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>32</td>
+                    <td>Kakaagey, Mohamed R/Kilegefaanu</td>
+                    <td>Kakaagey, Mohamed Didi</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>33</td>
+                    <td>Kaleyfaan, Saikuraa</td>
+                    <td>Dhonthuththu, Saikuraa</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>34</td>
+                    <td>Kaleyfaan, Saikuraa H.</td>
+                    <td>Dhonkamana, Vaka-olhi</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>35</td>
+                    <td>Latheef, Ali, Dr</td>
+                    <td>Ali Latheef, Raed, Yoosuf, Abdul Azeez</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>36</td>
+                    <td>Lhaseedhibe', Waheed</td>
+                    <td>X, Amaan, Yalaan, x</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>37</td>
+                    <td>Lhaseedhibe`, Waheed</td>
+                    <td>Yoosuf, Zahura, X, Amaan</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>38</td>
+                    <td>Maahin, x</td>
+                    <td>X, Nazima, Amir, Ali</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>39</td>
+                    <td>Malaak, Mariyam</td>
+                    <td>Fulhu, Adam, Neena, Zulaikha</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>40</td>
+                    <td>Malaka, X</td>
+                    <td>Shifau, Ali, Shazlee, X</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>41</td>
+                    <td>Manike`, Maakoshaaru</td>
+                    <td>Didi, Faiyliyaagey A., Didi, Roanugey</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>42</td>
+                    <td>Maniku, Mohamed I.</td>
+                    <td>Yoosuf, Haseena</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>43</td>
+                    <td>Maniku, Mohamed Ibrahim</td>
+                    <td>Muna, Aminath, Nasiha, Aishath</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>44</td>
+                    <td>Meerubahuru, Seedhi</td>
+                    <td>x, Kaiydhaidhi, Kaamineegey, Siththi</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>45</td>
+                    <td>Naeem, Fathmath Anaan</td>
+                    <td>Leena, Khadeeja, Naeem, X</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>46</td>
+                    <td>Raushan, Fathimath</td>
+                    <td>Ashir, Ahmed, Nasiha, Aishath</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>47</td>
+                    <td>S'Kilegefaanuge', Dhosheeseedhi</td>
+                    <td>Badi-alibeygey, Dhonseedhi</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>48</td>
+                    <td>S`Kilegefaanuge`, Dhosheeseedhi</td>
+                    <td>Badi-alibeygey, Dhonseedhi, Dhondheedhi, Sikka</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>49</td>
+                    <td>Shareef, Liam M, Jr</td>
+                    <td>Shareef, Mohamed, Dr, Reema, Mariyam</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>50</td>
+                    <td>Shareef, Mohamed, Dr</td>
+                    <td>Ismail, Shareefa, Mohamed, Ibrahim</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>51</td>
+                    <td>Shazlee, X</td>
+                    <td>Ibrahim, Hafeeza, Malaka, X</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>52</td>
+                    <td>Uyoon, x</td>
+                    <td>Leena, Khadeeja, Naeem, X</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>53</td>
+                    <td>X, Amaan</td>
+                    <td>Lhaseedhibe`, Waheed, Zarahana, Aishath</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>54</td>
+                    <td>X, Anji</td>
+                    <td>Yoosuf, Haseena, Fakhir, Ismail</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>55</td>
+                    <td>Xy, Xy</td>
+                    <td>Shifa, x, Ashfaq, Ahmed</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>56</td>
+                    <td>Yalaan, x</td>
+                    <td>Lhaseedhibe`, Waheed, Zarahana, Aishath</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>57</td>
+                    <td>Yoosuf, Abdul</td>
+                    <td>Dhaannaagey, Siththi, Niyad, Mohammed</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>58</td>
+                    <td>x, Ahzam</td>
+                    <td>Faiz, Mohamed, Salwa, Khadheeja</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>59</td>
+                    <td>x, Kaiydhaidhi</td>
+                    <td>Meerubahuru, Seedhi, Kaamineegey, Siththi</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+                <tr>
+                    <td>60</td>
+                    <td>xx, nuzu</td>
+                    <td>Irufan, Ibrahim, Mohamed, Abidha</td>
+                    <td><span class="badge badge-danger">EXTRA</span></td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function filterTable(tableId, filterId) {
+            const input = document.getElementById(filterId);
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            }
+        }
+    </script>
+
+    <div style="margin-top: 40px; padding: 20px; background: #ecf0f1; border-radius: 8px; text-align: center;">
+        <p><strong>Report Generated:</strong> 2025-10-06 06:27:23</p>
+        <p>Tribal Extraction Tool - Saikura Family Tree Analysis</p>
+    </div>
+</body>
+</html>
